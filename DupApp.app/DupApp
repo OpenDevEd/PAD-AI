@@ -1,0 +1,4 @@
+#!/bin/sh
+cd ~/Desktop/SPuD-AI/local-app
+python2.7 -m SimpleHTTPServer 7777 & 
+xdg-open http://localhost:7777
