@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel='stylesheet' id='compiled.css-css'  href='https://mdbootstrap.com/wp-content/themes/mdbootstrap4/css/compiled-4.19.1.min.css?ver=4.19.1' type='text/css' media='all' />
+ </head>
+<body>
+    <section class="container" style='margin-top:200px;'>
+           
+          <div class="card" style="margin-bottom:40px; padding:20px;">
+            <div class="card-body" >
+              <h3 class="card-title">Username:</h3>
+               <input type="text" id="username" class='form-control' onchange="onChangeInput()" placeholder="Enter your name">
+                <h3 class="card-title" style="margin-top:15px;">Numbers:</h3>
+               <input type="integer" id="number_rand" class='form-control' onchange="onChangeNumber()" placeholder="Enter Numbers of random" value="100">
+            </div>
+          </div>
+          <div>
+              <div class="form-group">
+                <button type="button" id="duplicate"  class="btn btn-primary"  disabled onclick="duplicate()">Duplicate</button>
+                 <button type="button" id="not_duplicate"  class="btn btn-danger" disabled onclick="not_duplicate()">Not Duplicate</button>
+                  <button type='button' id="btn_download" class="btn btn-success" hidden onclick="download()" data-toggle="modal" data-target="#centralModalInfo">Download</button>
+              </div>
+          </div>
+          <div>
+            <table class="table table-bordered table-striped mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">Title</th>
+                  <th scope="col">Title1</th>
+                  <th scope="col">Abstract</th>
+                   <th scope="col">Abstract1</th>
+                  <th scope="col">Keyword</th>
+                  <th scope="col">Keyword1</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+                <tr>
+                  <td id="title"></td>
+                  <td id="title1"></td>
+                  <td id="abstract"></td>
+                  <td id="abstract1"></td>
+                  <td id="keyword"></td>
+                  <td id="keyword1"></td>
+                </tr>
+              </tbody>
+            </table>
+             <div id="cur_status" hidden><span id="cur_count"></span>/<span id='total_count'></span></div>
+          </div>
+          <div class="output"></div>
+           <div class="modal fade" id="centralModalInfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+             aria-hidden="true">
+             <div class="modal-dialog modal-notify modal-info" role="document">
+               <!--Content-->
+               <div class="modal-content">
+                 <!--Header-->
+                 <div class="modal-header">
+                   <p class="heading lead">Success Download</p>
+
+                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true" class="white-text">&times;</span>
+                   </button>
+                 </div>
+
+                 <div class="modal-body">
+                   <div class="text-center">
+                     <i class="fas fa-check fa-4x mb-3 animated rotateIn"></i>
+                     <p>Please send the file Duplicates_<span id="_filename"></span>.csv, from your Desktop, to via email once you are finished</p>
+                   </div>
+                 </div>
+                 <div class="modal-footer justify-content-center">
+                   
+                   <a type="button" class="btn btn-outline-primary waves-effect" data-dismiss="modal">Got it</a>
+                 </div>
+               </div>
+               <!--/.Content-->
+             </div>
+           </div>
+    </section>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+   <script type='text/javascript' src='https://mdbootstrap.com/wp-content/themes/mdbootstrap4/js/bundles/4.19.1/compiled.0.min.js?ver=4.19.1' id='mdb-js2-js'></script>
+  <script type="text/javascript">
+         var randArray = [];
+            var resultArray = [];
+            var all_Data = [];
+            var username = '';
+            var curRand_id = 0;
+            var cur_count = 0;
+            var total_count = document.getElementById('number_rand').value;
+            var _isSignedIn = true;
+            $(document).ready(function() {
+           $.ajax({
+                type: "GET",
+                url: "data.csv",
+                dataType: "text",
+                success: function(data) {
+                    all_Data = csvJSON(data);
+                }
+            });
+        });
+        document.getElementById('total_count').innerHTML = total_count;
+        function init()
+        {
+             randArray = [];
+             resultArray = [];
+             username = '';
+             curRand_id = 1;
+             cur_count = 0;
+             var total_count = document.getElementById('number_rand').value;
+             document.getElementById('duplicate').disabled = false;
+              document.getElementById('not_duplicate').disabled = false;
+              document.getElementById('btn_download').hidden = true;
+                document.getElementById('total_count').innerHTML = total_count;
+        }
+        function csvJSON(csv){
+          var lines=csv.split("\n");
+          var result = [];
+          newline = lines[0]+',humanIdentity';
+          headers=lines[0].split(",");
+          for(var i=1;i<lines.length;i++){
+              var obj = {};
+              var currentline=lines[i].split(",");
+              for(var j=0;j<headers.length-1;j++){
+                  obj[headers[j]] = currentline[j];
+              }
+              result.push(obj);
+          }
+            return result; //JSON
+        }
+       function JSONToCSVConvertor(JSONData, username, ShowLabel) {
+            var arrData = typeof JSONData != 'object' ? JSON.parse(JSONData) : JSONData;
+            var CSV = '';
+            if (ShowLabel) { //This condition will generate the Label/Header
+                var row='';
+                for (var index in arrData[0]) { 
+                    if (arrData[0].hasOwnProperty(index)) {
+                        row += index + ','; //Now convert each value to string and comma-seprated
+                    }
+                }
+                row = row.slice(0, -1);
+                CSV += row + '\r\n'; //append Label row with line break
+            }
+
+            for (var i = 0; i < arrData.length; i++) { //1st loop is to extract each row
+                var row_1 = "";
+                for (var index_1 in arrData[i]) {
+                    if (arrData[i].hasOwnProperty(index_1)) {
+                        row_1 += '"' + arrData[i][index_1] + '",';
+                    }
+                }
+                row_1.slice(0, row_1.length - 1);
+                row_1 = row_1.replaceAll("\"",' ');
+                CSV += row_1 + '\r\n'; //add a line break after each row
+            }
+            var link = (function () { //this will generate a temp "a" tag
+                var l = document.createElement("a");
+                l.id = "lnkDwnldLnk";
+                document.body.appendChild(l);
+                return $("#lnkDwnldLnk");
+            }());
+
+            function createObjectURL(file) {
+                if (window.URL && window.URL.createObjectURL) {
+                    return window.URL.createObjectURL(file);
+                } else if (window.webkitURL) {
+                    return window.webkitURL.createObjectURL(file);
+                }
+            }
+
+            var blob = new Blob([CSV], {type: 'text/csv'});
+            var csvUrl = createObjectURL(blob);
+            var filename = 'Duplicate_'+username + '.csv';
+            link.attr({
+                'download': filename,
+                'href': csvUrl
+            });
+            link[0].click();
+            link.remove();
+        }
+        function getRandomId()
+        {
+            while(1)
+            {
+                var rnd_id = Math.floor(Math.random()*all_Data.length);
+                if(randArray.includes(rnd_id)){continue;}
+                else 
+                {
+                    randArray.push(rnd_id);
+                    break;
+                }    
+            }
+            return rnd_id;
+        }
+        function duplicate()
+        {
+            all_Data[curRand_id]['similarityScore'] = 1;
+            all_Data[curRand_id]['similarityAlgorithm'] = 'human';
+            all_Data[curRand_id]['humanIdentity'] = username;
+
+            resultArray.push(all_Data[curRand_id]);
+            display_next();
+        }
+        function not_duplicate()
+        {
+            all_Data[curRand_id]['similarityScore'] = 0;
+            all_Data[curRand_id]['similarityAlgorithm'] = 'human';
+            all_Data[curRand_id]['humanIdentity'] = username;
+            resultArray.push(all_Data[curRand_id]);
+            display_next();
+        }
+        function onChangeInput() 
+        {
+          
+            username = document.getElementById('username').value;
+            if(username == '')
+            {
+                
+                document.getElementById('duplicate').setAttribute("disabled", true);
+                document.getElementById('not_duplicate').setAttribute("disabled", true);
+            }
+            else
+            {
+                document.getElementById('_filename').innerHTML=username;
+                document.getElementById('duplicate').disabled=false;
+                document.getElementById('not_duplicate').disabled=false;
+            }
+            $('#cur_status').removeAttr('hidden');
+            display_next();
+        }
+        function display_next()
+        {
+            if(total_count == 0){alert('Enter number'); return;}
+            if(randArray.length >= total_count)
+            {
+                document.getElementById('duplicate').setAttribute("disabled", true);
+                document.getElementById('not_duplicate').setAttribute("disabled", true);
+                document.getElementById('btn_download').hidden = false;
+                return;
+            }
+           
+            curRand_id = getRandomId();
+             var title = all_Data[curRand_id]["title"];
+             var title1 = all_Data[curRand_id]['title1'];
+             var abstract = all_Data[curRand_id]['abstract'];
+             var abstract1 = all_Data[curRand_id]['abstract1'];
+             var keyword = all_Data[curRand_id]['keywords'];
+             var keyword1 = all_Data[curRand_id]['keywords1'];
+
+
+            document.getElementById('cur_count').innerHTML = randArray.length;
+            document.getElementById('title').innerHTML = title;
+            document.getElementById('title1').innerHTML = title1;
+            document.getElementById('abstract').innerHTML = abstract;
+            document.getElementById('abstract1').innerHTML = abstract1;
+            document.getElementById('keyword').innerHTML = keyword;
+            document.getElementById('keyword1').innerHTML = keyword1;
+        }
+
+      function download()
+      {
+        JSONToCSVConvertor(resultArray,username,headers);
+        init();
+      }
+     
+      function onChangeNumber()
+      {
+        total_count = document.getElementById('number_rand').value;
+        document.getElementById('total_count').innerHTML = total_count;
+      }
+    </script>
+</body>
+
+</html>
+
