@@ -1,4 +1,6 @@
-# SPuD-AI
+# PAD-AI
+
+Publications Analysis and Data with AI
 
 Welcome to our project. We're exploring ways to enhance repository of research articles using AI methods.
 
