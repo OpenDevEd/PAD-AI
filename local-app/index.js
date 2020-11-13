@@ -8,13 +8,15 @@ var cur_count = 0;
 var total_count = document.getElementById('number_rand').value;
 var _isSignedIn = true;
 $(document).ready(function () {
+    $('#selection').hide();
     $.ajax({
-        url: "/data.json",
+        url: "spud_bjorn_app.json",
         dataType: "json",
         success: function (data) {
             all_Data = data;//csvJSON(data);
             console.log(all_Data);
-            var cols = Object.keys(all_Data[0]).slice(1, 17);
+            var cols = Object.keys(all_Data[0]);//.slice(0, 18);
+            console.log(cols);
             headers = cols;
             document.querySelector('.head-expanded').innerHTML = ""
             document.querySelector('.row-expanded').innerHTML = ""
@@ -23,6 +25,10 @@ $(document).ready(function () {
                 document.querySelector('.head-expanded').innerHTML += "<th scope='col'>" + elem + "</th>";
                 document.querySelector('.row-expanded').innerHTML += "<td id='expanded-" + elem + "'></td>";
             }
+        },
+        complete: function(){
+            $('#start').prop('disabled', false);
+            $('#loading').hide();
         }
     });
 });
@@ -126,7 +132,7 @@ function display_next() {
     curRand_id = getRandomId();
     document.getElementById('cur_count').innerHTML = randArray.length;
 
-    var cols = Object.keys(all_Data[0]).slice(1, 17);
+    var cols = Object.keys(all_Data[0]);//.slice(0, 18);
     for (let i = 0; i < cols.length; i++) {
         elem = cols[i]
         if (document.getElementById(elem))
