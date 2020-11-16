@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 #-*- coding: utf-8 -*-
 
+import json
+
 # import Python's JSON library for its loads() method
 import json, requests
 
@@ -10,6 +12,8 @@ from time import sleep
 # import the datetime libraries datetime.now() method
 from datetime import datetime
 
+import sys
+
 # use the Elasticsearch client's helpers class for _bulk API
 from elasticsearch import Elasticsearch, helpers
 
@@ -18,12 +22,16 @@ client = Elasticsearch("localhost:9200")
 
 out = dict()
 out_verbose = dict()
-total_ids = 10000
+total_ids = 100
 score_over_90 = 0
 html = "<head><style>span {color: red;} em {font-style: normal; color: black;}</style></head><body>"
 
+with open('local-app/spud_bjorn.json') as f:
+  data = json.load(f)
+  
 # iterate over all ES ids
-for id in range (0,total_ids):
+for idx in range (0,len(data)):
+    id = int(data[idx]['Reference ID (ID)'])
     found = False
     # construct query
     search_param = {

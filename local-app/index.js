@@ -10,7 +10,7 @@ var _isSignedIn = true;
 $(document).ready(function () {
     $('#selection').hide();
     $.ajax({
-        url: "spud_bjorn_app.json",
+        url: "spud_bjorn.json",
         dataType: "json",
         success: function (data) {
             all_Data = data;//csvJSON(data);
@@ -20,10 +20,14 @@ $(document).ready(function () {
             headers = cols;
             document.querySelector('.head-expanded').innerHTML = ""
             document.querySelector('.row-expanded').innerHTML = ""
+            document.querySelector('.row2-expanded').innerHTML = ""
             for (let i = 0; i < cols.length; i++) {
                 const elem = cols[i];
-                document.querySelector('.head-expanded').innerHTML += "<th scope='col'>" + elem + "</th>";
-                document.querySelector('.row-expanded').innerHTML += "<td id='expanded-" + elem + "'></td>";
+                if (!elem.includes("1")){
+                    document.querySelector('.head-expanded').innerHTML += "<th scope='col'>" + elem + "</th>";
+                    document.querySelector('.row-expanded').innerHTML += "<td id='expanded-" + elem + "'></td>";
+                    document.querySelector('.row2-expanded').innerHTML += "<td id='expanded-" + elem + "1'></td>";
+                }
             }
         },
         complete: function(){
