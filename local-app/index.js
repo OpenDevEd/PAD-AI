@@ -10,7 +10,7 @@ var _isSignedIn = true;
 $(document).ready(function () {
     $('#selection').hide();
     $.ajax({
-        url: "spud_bjorn.json",
+        url: "out_100.json",
         dataType: "json",
         success: function (data) {
             all_Data = data;//csvJSON(data);
